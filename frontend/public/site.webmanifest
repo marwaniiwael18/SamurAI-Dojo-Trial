@@ -1,0 +1,17 @@
+{
+  "name": "SamurAI Dojo",
+  "short_name": "SamurAI",
+  "description": "The intelligent security platform for corporate professionals",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#3B82F6",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/"
+}
