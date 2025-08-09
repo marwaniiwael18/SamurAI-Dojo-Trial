@@ -1,0 +1,42 @@
+{
+  "folders": [
+    {
+      "name": "SamurAI Dojo",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "git.autoRepositoryDetection": false,
+    "git.scanRepositories": [],
+    "git.openRepositoryInParentFolders": "never",
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": false,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/.env": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/*.code-search": true,
+      "**/dist": true,
+      "**/build": true
+    },
+    "git.ignoredRepositories": [],
+    "explorer.excludeGitIgnore": true,
+    "scm.repositories.visible": 1,
+    "git.detectSubmodules": false,
+    "git.repositoryScanMaxDepth": 1
+  },
+  "extensions": {
+    "recommendations": [
+      "github.copilot",
+      "github.copilot-chat",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "ms-vscode.vscode-json"
+    ]
+  }
+}

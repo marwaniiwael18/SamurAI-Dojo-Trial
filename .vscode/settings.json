@@ -1,0 +1,29 @@
+{
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": true,
+    "markdown": true
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "file": "rules/figma-dev-mode-rules.md"
+    }
+  ],
+  "git.autoRepositoryDetection": false,
+  "git.scanRepositories": [],
+  "git.openRepositoryInParentFolders": "never",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.git": false,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true
+  },
+  "git.ignoredRepositories": []
+}
