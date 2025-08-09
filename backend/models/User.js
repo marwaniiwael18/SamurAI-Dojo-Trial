@@ -174,17 +174,15 @@ userSchema.pre('save', function(next) {
   if (this.isModified('email')) {
     this.emailDomain = this.email.split('@')[1];
     
-    // Check if it's a corporate email (not personal or academic)
+    // Check if it's a corporate email (not personal)
     const personalDomains = [
       'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 
-      'aol.com', 'icloud.com', 'protonmail.com', 'tutanota.com'
+      'aol.com', 'icloud.com', 'protonmail.com', 'tutanota.com',
+      'live.com', 'me.com', 'mac.com', 'msn.com', 'ymail.com'
     ];
     
-    const isAcademic = this.emailDomain.endsWith('.edu') || 
-                      this.emailDomain.endsWith('.ac.uk') ||
-                      this.emailDomain.endsWith('.edu.au');
-    
-    this.isCorporateEmail = !personalDomains.includes(this.emailDomain) && !isAcademic;
+    // Consider all non-personal domains as corporate (including universities)
+    this.isCorporateEmail = !personalDomains.includes(this.emailDomain);
   }
   next();
 });
@@ -233,16 +231,20 @@ userSchema.statics.findByEmail = function(email) {
 // Static method to validate corporate email
 userSchema.statics.validateCorporateEmail = function(email) {
   const domain = email.split('@')[1];
+  
+  // List of personal email domains to block
   const personalDomains = [
     'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 
-    'aol.com', 'icloud.com', 'protonmail.com', 'tutanota.com'
+    'aol.com', 'icloud.com', 'protonmail.com', 'tutanota.com',
+    'live.com', 'me.com', 'mac.com', 'msn.com', 'ymail.com'
   ];
   
-  const isAcademic = domain.endsWith('.edu') || 
-                    domain.endsWith('.ac.uk') ||
-                    domain.endsWith('.edu.au');
+  // Check if it's a personal domain
+  const isPersonal = personalDomains.includes(domain);
   
-  return !personalDomains.includes(domain) && !isAcademic;
+  // Allow all non-personal domains (including universities, organizations, companies)
+  // Universities and educational institutions often have corporate security needs
+  return !isPersonal;
 };
 
 module.exports = mongoose.model('User', userSchema);

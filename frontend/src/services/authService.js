@@ -79,24 +79,20 @@ const authService = {
 
   // Validate corporate email locally (quick check)
   validateCorporateEmail: (email) => {
-    // List of personal and academic email domains to block
+    // List of personal email domains to block
     const blockedDomains = [
       'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
-      'icloud.com', 'me.com', 'mac.com', 'live.com', 'msn.com',
-      'edu', '.edu', 'ac.uk', 'uni-', 'university', 'college',
-      'student.', 'alumni.', 'school.', 'academic.'
+      'icloud.com', 'me.com', 'mac.com', 'live.com', 'msn.com', 'ymail.com',
+      'protonmail.com', 'tutanota.com'
     ]
     
     if (!email || !email.includes('@')) return false
     
     const domain = email.split('@')[1].toLowerCase()
     
-    // Check if domain is in blocked list
-    return !blockedDomains.some(blocked => 
-      domain === blocked || 
-      domain.endsWith('.' + blocked) || 
-      domain.includes(blocked)
-    )
+    // Allow all domains except personal ones
+    // This includes universities, organizations, and companies
+    return !blockedDomains.includes(domain)
   }
 }
 

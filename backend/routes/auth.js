@@ -41,7 +41,7 @@ const registerValidation = [
     .custom(async (email) => {
       // Check if it's a corporate email
       if (!User.validateCorporateEmail(email)) {
-        throw new Error('Please use a corporate email address. Personal and academic emails are not allowed.');
+        throw new Error('Please use a corporate or institutional email address. Personal emails are not allowed.');
       }
       
       // Check if user already exists
@@ -100,7 +100,7 @@ router.post('/validate-email', async (req, res) => {
     if (!isCorporate) {
       return res.status(400).json({
         status: 'fail',
-        message: 'Please use a corporate email address. Personal and academic emails are not allowed.'
+        message: 'Please use a corporate or institutional email address. Personal emails are not allowed.'
       });
     }
 

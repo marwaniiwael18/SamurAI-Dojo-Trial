@@ -311,7 +311,7 @@ const HomePage = () => {
               <div>
                 <h3 className="font-semibold text-blue-800 mb-1">Corporate Access Only</h3>
                 <p className="text-sm text-blue-700">
-                  SamurAI Dojo is exclusively for enterprise and organizational users. Please use your corporate email address to access the platform.
+                  SamurAI Dojo is for enterprise, organizational, and institutional users. Please use your corporate or university email address to access the platform.
                 </p>
               </div>
             </div>
@@ -398,7 +398,7 @@ const HomePage = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   placeholder="john.doe@company.com"
                 />
-                <p className="text-xs text-gray-500 mt-1">Corporate email required - personal emails not allowed</p>
+                <p className="text-xs text-gray-500 mt-1">Corporate or institutional email required - personal emails not allowed</p>
               </div>
               
               <div>
