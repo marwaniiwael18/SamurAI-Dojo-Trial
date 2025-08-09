@@ -104,13 +104,18 @@ const useAuthStore = create(
             state.isLoading = false
           })
 
-          // Extract error message
+          // Extract error message with prioritization of validation and conflict
           let errorMessage = 'Registration failed'
+          const data = error.response?.data
+          const status = error.response?.status
           
-          if (error.response?.data?.message) {
-            errorMessage = error.response.data.message
-          } else if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
-            errorMessage = error.response.data.errors.map(err => err.msg || err.message).join(', ')
+          if (Array.isArray(data?.errors) && data.errors.length) {
+            // express-validator errors
+            errorMessage = data.errors.map(err => err.msg || err.message).join(', ')
+          } else if (data?.message) {
+            errorMessage = data.message
+          } else if (status === 409) {
+            errorMessage = 'User with this email already exists'
           } else if (error.message) {
             errorMessage = error.message
           }

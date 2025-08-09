@@ -139,10 +139,16 @@ router.post('/register', authLimiter, registerValidation, async (req, res) => {
     // Check validation results
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
+      const errs = errors.array();
+      // Prefer specific status/message for already-exists case
+      const existsErr = errs.find(e => (e.msg || '').toLowerCase().includes('already exists'));
+      const statusCode = existsErr ? 409 : 400;
+      const message = existsErr ? existsErr.msg : 'Validation failed';
+
+      return res.status(statusCode).json({
         status: 'fail',
-        message: 'Validation failed',
-        errors: errors.array()
+        message,
+        errors: errs
       });
     }
 
@@ -242,6 +248,14 @@ router.post('/register', authLimiter, registerValidation, async (req, res) => {
     });
 
   } catch (error) {
+    // Handle duplicate email unique index error
+    if (error && (error.code === 11000 || error.code === '11000')) {
+      return res.status(409).json({
+        status: 'fail',
+        message: 'User with this email already exists'
+      });
+    }
+
     logger.error('Registration error:', error);
     res.status(500).json({
       status: 'error',

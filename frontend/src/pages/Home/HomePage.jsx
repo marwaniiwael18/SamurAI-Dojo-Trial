@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
+import authService from '../../services/authService'
 
 const HomePage = () => {
   const navigate = useNavigate()
@@ -71,6 +72,16 @@ const HomePage = () => {
         throw new Error('First name and last name are required')
       }
 
+      // Pre-validate email with server to catch existing/invalid emails early
+      try {
+        await authService.validateCorporateEmailServer(signupData.email)
+      } catch (preErr) {
+        const preMsg = preErr?.response?.data?.message || 'Email validation failed'
+        setError(preMsg)
+        setIsLoading(false)
+        return
+      }
+
       console.log('Sending registration data:', {
         firstName: signupData.firstName,
         lastName: signupData.lastName,
@@ -104,7 +115,10 @@ const HomePage = () => {
           setSuccessMessage('')
         }, 3000)
       } else {
-        throw new Error(result.error || 'Registration failed')
+        // Bubble a descriptive error so the catch can format
+        const err = new Error(result.error || 'Registration failed')
+        err.response = { data: { message: result.error } }
+        throw err
       }
     } catch (error) {
       console.error('Registration error:', error)
@@ -112,10 +126,10 @@ const HomePage = () => {
       // Handle different types of errors
       let errorMessage = 'Registration failed. Please try again.'
       
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message
-      } else if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+      if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
         errorMessage = error.response.data.errors.map(err => err.msg || err.message).join(', ')
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
       } else if (error.message) {
         errorMessage = error.message
       }
