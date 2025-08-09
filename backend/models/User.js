@@ -238,11 +238,18 @@ userSchema.statics.validateCorporateEmail = function(email) {
     'aol.com', 'icloud.com', 'protonmail.com', 'tutanota.com'
   ];
   
-  const isAcademic = domain.endsWith('.edu') || 
-                    domain.endsWith('.ac.uk') ||
-                    domain.endsWith('.edu.au');
+  // Allow ESPRIT university and other business domains
+  const allowedEducationalDomains = [
+    'esprit.tn', 'company.com'
+  ];
   
-  return !personalDomains.includes(domain) && !isAcademic;
+  const isPersonal = personalDomains.includes(domain);
+  const isBlockedAcademic = domain.endsWith('.edu') || 
+                           domain.endsWith('.ac.uk') ||
+                           domain.endsWith('.edu.au');
+  const isAllowedDomain = allowedEducationalDomains.includes(domain);
+  
+  return !isPersonal && (!isBlockedAcademic || isAllowedDomain);
 };
 
 module.exports = mongoose.model('User', userSchema);
