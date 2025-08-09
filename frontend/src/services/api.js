@@ -1,10 +1,9 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
-import toast from 'react-hot-toast'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: '/api', // Use relative URL to leverage Vite proxy
   timeout: 10000,
   withCredentials: true
 })
@@ -65,15 +64,15 @@ api.interceptors.response.use(
 
     // Handle specific error responses
     if (error.response?.status === 403) {
-      toast.error('You do not have permission to perform this action')
+      console.error('Forbidden: You do not have permission to perform this action')
     } else if (error.response?.status === 423) {
-      toast.error('Account temporarily locked. Please try again later.')
+      console.error('Account temporarily locked. Please try again later.')
     } else if (error.response?.status === 429) {
-      toast.error('Too many requests. Please slow down.')
+      console.error('Too many requests. Please slow down.')
     } else if (error.response?.status >= 500) {
-      toast.error('Server error. Please try again later.')
+      console.error('Server error. Please try again later.')
     } else if (error.code === 'NETWORK_ERROR' || !error.response) {
-      toast.error('Network error. Please check your connection.')
+      console.error('Network error. Please check your connection.')
     }
 
     return Promise.reject(error)

@@ -19,6 +19,7 @@ import DashboardPage from './pages/Dashboard/Dashboard'
 import WorkspacePage from './pages/Workspace/WorkspacePage'
 import SettingsPage from './pages/Settings/SettingsPage'
 import NotFoundPage from './pages/Error/NotFoundPage'
+import ApiTestPage from './pages/Debug/ApiTestPage'
 
 function App() {
   const { isLoading } = useAuthStore()
@@ -90,6 +91,12 @@ function App() {
               <VerifyEmailPage />
             </PublicRoute>
           }
+        />
+
+        {/* Debug route - only in development */}
+        <Route
+          path="/debug"
+          element={<ApiTestPage />}
         />
 
         {/* Protected routes */}

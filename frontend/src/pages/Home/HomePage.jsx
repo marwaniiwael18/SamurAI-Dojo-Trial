@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
-import authService from '../../services/authService'
 
 const HomePage = () => {
   const navigate = useNavigate()
-  const { isAuthenticated, login: loginToStore } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const [currentView, setCurrentView] = useState('signup') // 'signup', 'signin', 'forgot'
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -79,16 +78,15 @@ const HomePage = () => {
         password: '[HIDDEN]'
       })
 
-      const response = await authService.register({
+      // Use the authStore instead of direct service call
+      const result = await useAuthStore.getState().register({
         firstName: signupData.firstName,
         lastName: signupData.lastName,
         email: signupData.email,
         password: signupData.password
       })
 
-      console.log('Registration response:', response)
-
-      if (response.status === 'success' && response.data?.user) {
+      if (result.success) {
         setSuccessMessage('Account created successfully! Please check your email for verification.')
         
         // Clear form
@@ -106,7 +104,7 @@ const HomePage = () => {
           setSuccessMessage('')
         }, 3000)
       } else {
-        throw new Error('Registration response was unexpected')
+        throw new Error(result.error || 'Registration failed')
       }
     } catch (error) {
       console.error('Registration error:', error)
@@ -117,7 +115,7 @@ const HomePage = () => {
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message
       } else if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
-        errorMessage = error.response.data.errors.map(err => err.msg).join(', ')
+        errorMessage = error.response.data.errors.map(err => err.msg || err.message).join(', ')
       } else if (error.message) {
         errorMessage = error.message
       }
@@ -135,14 +133,16 @@ const HomePage = () => {
     setIsLoading(true)
 
     try {
-      const response = await authService.login(signinData)
+      // Use the authStore instead of direct service call
+      const result = await useAuthStore.getState().login(signinData)
       
-      if (response.status === 'success' && response.data?.user && response.token) {
-        loginToStore(response.data.user, response.token)
+      if (result.success) {
         setSuccessMessage('Login successful! Redirecting...')
         setTimeout(() => {
           navigate('/dashboard')
         }, 2000)
+      } else {
+        throw new Error(result.error || 'Login failed')
       }
     } catch (error) {
       console.error('Login error:', error)
@@ -168,8 +168,13 @@ const HomePage = () => {
     setIsLoading(true)
 
     try {
-      await authService.forgotPassword(forgotEmail)
-      setSuccessMessage('Reset password link sent to your email!')
+      const result = await useAuthStore.getState().forgotPassword(forgotEmail)
+      
+      if (result.success) {
+        setSuccessMessage('Reset password link sent to your email!')
+      } else {
+        throw new Error(result.error || 'Failed to send reset email')
+      }
     } catch (error) {
       setError(error.message || 'Failed to send reset email. Please try again.')
     } finally {

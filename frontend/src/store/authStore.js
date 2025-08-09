@@ -2,7 +2,6 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import authService from '../services/authService'
-import toast from 'react-hot-toast'
 
 const useAuthStore = create(
   persist(
@@ -90,8 +89,8 @@ const useAuthStore = create(
         try {
           const response = await authService.register(userData)
           
-          // Don't auto-login after registration, user needs to verify email
-          toast.success('Registration successful! Please check your email to verify your account.')
+          // Registration successful - don't auto-login, user needs to verify email
+          console.log('Registration successful:', response)
           
           set((state) => {
             state.isLoading = false
@@ -99,14 +98,24 @@ const useAuthStore = create(
 
           return { success: true, data: response.data }
         } catch (error) {
+          console.error('Registration error in authStore:', error)
+          
           set((state) => {
             state.isLoading = false
           })
 
-          const message = error.response?.data?.message || 'Registration failed'
-          toast.error(message)
+          // Extract error message
+          let errorMessage = 'Registration failed'
           
-          return { success: false, error: message }
+          if (error.response?.data?.message) {
+            errorMessage = error.response.data.message
+          } else if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+            errorMessage = error.response.data.errors.map(err => err.msg || err.message).join(', ')
+          } else if (error.message) {
+            errorMessage = error.message
+          }
+          
+          return { success: false, error: errorMessage }
         }
       },
 
@@ -126,8 +135,6 @@ const useAuthStore = create(
             refreshToken: response.refreshToken
           })
 
-          toast.success('Welcome back!')
-          
           set((state) => {
             state.isLoading = false
           })
@@ -139,7 +146,6 @@ const useAuthStore = create(
           })
 
           const message = error.response?.data?.message || 'Login failed'
-          toast.error(message)
           
           return { success: false, error: message }
         }
@@ -152,7 +158,6 @@ const useAuthStore = create(
           console.error('Logout error:', error)
         } finally {
           get().clearAuth()
-          toast.success('Logged out successfully')
         }
       },
 
@@ -163,8 +168,6 @@ const useAuthStore = create(
 
         try {
           await authService.forgotPassword(email)
-          
-          toast.success('Password reset link sent to your email')
           
           set((state) => {
             state.isLoading = false
@@ -177,7 +180,6 @@ const useAuthStore = create(
           })
 
           const message = error.response?.data?.message || 'Failed to send reset link'
-          toast.error(message)
           
           return { success: false, error: message }
         }
@@ -197,8 +199,6 @@ const useAuthStore = create(
             refreshToken: response.refreshToken
           })
 
-          toast.success('Password reset successful!')
-          
           set((state) => {
             state.isLoading = false
           })
@@ -210,7 +210,6 @@ const useAuthStore = create(
           })
 
           const message = error.response?.data?.message || 'Password reset failed'
-          toast.error(message)
           
           return { success: false, error: message }
         }
@@ -232,8 +231,6 @@ const useAuthStore = create(
             state.isLoading = false
           })
 
-          toast.success('Email verified successfully!')
-          
           return { success: true }
         } catch (error) {
           set((state) => {
@@ -241,7 +238,6 @@ const useAuthStore = create(
           })
 
           const message = error.response?.data?.message || 'Email verification failed'
-          toast.error(message)
           
           return { success: false, error: message }
         }
@@ -255,8 +251,6 @@ const useAuthStore = create(
         try {
           await authService.updatePassword(passwords)
           
-          toast.success('Password updated successfully!')
-          
           set((state) => {
             state.isLoading = false
           })
@@ -268,7 +262,6 @@ const useAuthStore = create(
           })
 
           const message = error.response?.data?.message || 'Password update failed'
-          toast.error(message)
           
           return { success: false, error: message }
         }
